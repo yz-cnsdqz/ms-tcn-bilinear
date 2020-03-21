@@ -14,7 +14,6 @@ then
         splits=$(seq 1 5)
 fi
 
-
 for i in $splits;
 do
 	python main.py --action=train --dataset=$dataset --split=$i --pooling=$pooling --dropout=$dropout --epoch=$epoch

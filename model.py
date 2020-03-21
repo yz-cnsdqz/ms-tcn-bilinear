@@ -70,12 +70,6 @@ class FBM(nn.Module):
 
 
 
-
-
-
-
-
-
 class RPBinaryPooling(nn.Module):
     def __init__(self, 
                  n_basis=8, 
@@ -102,10 +96,6 @@ class RPBinaryPooling(nn.Module):
                                         requires_grad=False)
                             )
                             
-        # self.b = Parameter(torch.zeros([1, self.n_basis**2, 1], 
-        #                                dtype=torch.float32,
-        #                                device=torch.device('cuda:0')),
-        #                    requires_grad=True)  
 
     def channel_max_normalization(self, x):
         max_vals = torch.max(torch.abs(x), dim=1, keepdim=True)[0]
@@ -135,10 +125,6 @@ class RPBinaryPooling(nn.Module):
             out = self.channel_max_normalization(out)
 
         return out
-
-
-
-
 
 
 
@@ -448,7 +434,6 @@ class MultiStageModel(nn.Module):
 
 
 
-
 class SingleStageModel(nn.Module):
     def __init__(self, num_layers, num_f_maps, dim, num_classes):
         super(SingleStageModel, self).__init__()
@@ -462,10 +447,6 @@ class SingleStageModel(nn.Module):
             out = layer(out)
         out = self.conv_out(out)
         return out
-
-
-
-
 
 
 class SingleStageModelBilinear(nn.Module):
@@ -503,9 +484,8 @@ class SingleStageModelBilinear(nn.Module):
             self.bilinear_layer = FBM(n_basis=dim_factor**2 *num_f_maps,
                                       use_normalization=False)
         else:
-            print('[Error]: no such bilinear layer. Use standard ms-tcn')
-
-
+            print('[Error]: no such bilinear layer. Program terminates')
+            sys.exit()
 
 
     def forward(self, x):
@@ -525,7 +505,6 @@ class SingleStageModelBilinear(nn.Module):
         #out = self.conv_out(out)
 
         return out2
-
 
 
 

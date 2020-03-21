@@ -1,5 +1,5 @@
 __pycache__/*
 results/*
-models/checkpoints*
 models/*
-data/
+data/*
+.vscode/

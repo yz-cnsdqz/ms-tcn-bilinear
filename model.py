@@ -306,8 +306,6 @@ class RPGaussianPoolingFull(nn.Module):
 
 
 
-
-
 class RPLearnablePooling(nn.Module):
     def __init__(self, 
                  n_basis=8, 
@@ -447,6 +445,7 @@ class SingleStageModel(nn.Module):
             out = layer(out)
         out = self.conv_out(out)
         return out
+
 
 
 class SingleStageModelBilinear(nn.Module):

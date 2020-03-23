@@ -41,9 +41,6 @@ rpg_folder = '/home/yzhang/workspaces/ms-tcn-bilinear/results/50salads_RPGaussia
 
 
 
-
-
-
 def read_file(path):
     with open(path, 'r') as f:
         content = f.read()

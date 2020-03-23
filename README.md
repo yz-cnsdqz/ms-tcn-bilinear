@@ -1,4 +1,4 @@
-# Multistage Temporal Convolutional Net with Bilinear Residual Module
+# Multistage Temporal Convolutional Network with A Bilinear Module
 
 
 ## Acknowledgement
@@ -13,15 +13,12 @@ Our code is developped based on the following work, the github repo of which is 
     }
 
 
-## Implementation
-Our implementation is based on Python 3 and PyTorch 1.1 in Ubuntu 18.04. One perhaps needs to modify the **model_dir** in the **main.py** file. 
-
 ### Training
 To train from scratch, one can run
 
     sh script_run_trainval.sh $dataset $pooling $dropout $epoch
     
-For example, to train on the **50Salads** dataset with **RPGaussian** method and **0.5 dropout ratio** for **50 epochs**. One should run in the terminal
+For example, to train models on the **50Salads** dataset with **RPGaussian** method and **0.5 dropout ratio** for **50 epochs**. One should run in the terminal
 
     sh script_run_trainval.sh 50salads RPGaussian 0.5 50
 
@@ -32,14 +29,13 @@ One notes that the ```dropout``` argument only works for higher order informatio
 in which the dropout ratio does not apply.
  
 
- 
 ### Evaluation
-To reproduce Tab.2 in our manuscript, one needs to download our checkpoints, and save them into the __models__ folder. Then, one can perform inference by for example running
+After training, the checkpoints are stored in the __models__ folder. Alternatively, one can download our checkpoints, and save them into the __models__ folder. To test, one can for example run
 
     sh script_run_val.sh 50salads FirstOrder 0.5 50
     
 
-Then, one will see the evaluation for individual splits, such as 
+Then, one will see the evaluation for individual splits and their average, such as 
 
        ---------------final results -------------------
         Acc: 73.8493
@@ -73,7 +69,6 @@ Then, one will see the evaluation for individual splits, such as
         F1@10:74.119663
         F1@25:71.844156
         F1@50:62.594565
-
 
 
 ## Data

@@ -72,13 +72,13 @@ Then, one will see the evaluation for individual splits and their average, such 
 
 
 ## Data
-Please put these two folders in to the __data__ folder.
+Please put these folders of frame-wise features in to the __data__ folder.
 
 [download](https://drive.google.com/drive/folders/16U-rtxgSe6udBNiJPVQppjiRgjezDu9O?usp=sharing)
 
 
 
 ## checkpoints
-Please put these checkpoints folders in to the __models__ folder, for reproducing the results in Tab. 2.
+Please put these checkpoints folders in to the __models__ folder, for reproducing the results in our manuscript.
 
 [download](https://drive.google.com/drive/folders/1vCu3Srj90KefPDVkY3v29pX8T9FGq26l?usp=sharing)

@@ -28,17 +28,17 @@ action_list = [
 
 
 import sys
-results_file_path = sys.argv[1]
+results_file_path = sys.argv[1] # e.g. split_1/rgb-01-1
 
 split = results_file_path.split('/')[0]
 filename = results_file_path.split('/')[1]
 
 
 gt_folder = '/home/yzhang/workspaces/ms-tcn-bilinear/data/50salads/groundTruth'
-mstcn_folder = '/home/yzhang/workspaces/ms-tcn-bilinear/results/50salads_mstcn'
-rpb_folder = '/home/yzhang/workspaces/ms-tcn-bilinear/results/50salads_RPBinary'
-rpg_folder = '/home/yzhang/workspaces/ms-tcn-bilinear/results/50salads_RPGaussian'
-
+res_1_folder = '/home/yzhang/workspaces/ms-tcn-bilinear/results/50salads_RPGaussian_dropout0.0_ep50'
+res_2_folder = '/home/yzhang/workspaces/ms-tcn-bilinear/results/50salads_RPGaussian_dropout0.25_ep50'
+res_3_folder = '/home/yzhang/workspaces/ms-tcn-bilinear/results/50salads_RPGaussian_dropout0.5_ep50'
+res_4_folder = '/home/yzhang/workspaces/ms-tcn-bilinear/results/50salads_RPGaussian_dropout0.75_ep50'
 
 
 def read_file(path):
@@ -48,38 +48,47 @@ def read_file(path):
     return content
 
 
-
 gt_content = read_file(os.path.join(gt_folder, filename+'.txt')).split('\n')[0:-1]
 
-recog_content_mstcn = read_file(os.path.join(mstcn_folder,
+recog_content_res_1 = read_file(os.path.join(res_1_folder,
                                             results_file_path)).split('\n')[1].split()
-recog_content_rpb = read_file(os.path.join(rpb_folder,
+recog_content_res_2 = read_file(os.path.join(res_2_folder,
                                             results_file_path)).split('\n')[1].split()
-recog_content_rpg = read_file(os.path.join(rpg_folder,
+recog_content_res_3 = read_file(os.path.join(res_3_folder,
+                                            results_file_path)).split('\n')[1].split()
+recog_content_res_4 = read_file(os.path.join(res_4_folder,
                                             results_file_path)).split('\n')[1].split()
 
 
 action_ids_gt = [action_list.index(x) for x in gt_content]
-action_ids_mstcn = [action_list.index(x) for x in recog_content_mstcn]
-action_ids_rpb = [action_list.index(x) for x in recog_content_rpb]
-action_ids_rpg = [action_list.index(x) for x in recog_content_rpg]
+action_ids_res1 = [action_list.index(x) for x in recog_content_res_1]
+action_ids_res2 = [action_list.index(x) for x in recog_content_res_2]
+action_ids_res3 = [action_list.index(x) for x in recog_content_res_3]
+action_ids_res4 = [action_list.index(x) for x in recog_content_res_4]
+
 
 plt.figure('gt')
 plt.pcolor(np.array(action_ids_gt).reshape([1,-1]))
+plt.savefig('/home/yzhang/Dropbox/vis_gt4.png')
 
-plt.figure('mstcn')
-plt.pcolor(np.array(action_ids_mstcn).reshape([1,-1]))
-
-plt.figure('rpb')
-plt.pcolor(np.array(action_ids_rpb).reshape([1,-1]))
-
-
-plt.figure('rpg')
-plt.pcolor(np.array(action_ids_rpg).reshape([1,-1]))
+plt.figure('dropout 0')
+plt.pcolor(np.array(action_ids_res1).reshape([1,-1]))
+plt.savefig('/home/yzhang/Dropbox/vis_dp04.png')
 
 
+plt.figure('dropout 0.25')
+plt.pcolor(np.array(action_ids_res2).reshape([1,-1]))
+plt.savefig('/home/yzhang/Dropbox/vis_dp0.254.png')
 
-            # edgecolors='k', linewidth=0.5)
-plt.show()
 
+plt.figure('dropout 0.5')
+plt.pcolor(np.array(action_ids_res3).reshape([1,-1]))
+plt.savefig('/home/yzhang/Dropbox/vis_dp0.54.png')
+
+
+plt.figure('dropout 0.75')
+plt.pcolor(np.array(action_ids_res4).reshape([1,-1]))
+plt.savefig('/home/yzhang/Dropbox/vis_dp0.754.png')
+
+# plt.show()
 

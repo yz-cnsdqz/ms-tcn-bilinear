@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# dataset=gtea
-# for i in 1 2 3 4;
 dataset=$1
 pooling=$2
 dropout=$3

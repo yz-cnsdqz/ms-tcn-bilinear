@@ -2,7 +2,7 @@
 
 
 ## License & Citation
-Our code following the MIT [license](LICENSE). When using our code, please cite our work
+Our code follows the MIT [license](LICENSE). When using our code, please cite our work
 ```
 @inproceedings{PSI:2019,
   title = {Generating 3D People in Scenes without People},
@@ -14,7 +14,6 @@ Our code following the MIT [license](LICENSE). When using our code, please cite 
   month_numeric = {6}
 }
 ```
-
 
 ___
 ## Code Description
@@ -28,8 +27,7 @@ For example, to train models on the **50Salads** dataset with **RPGaussian** met
 
     sh script_run_trainval.sh 50salads RPGaussian 0.5 50
 
-One notes that the ```dropout``` argument only works for higher order information pooling. When using **FirstOrder** pooling, which is exactly the original paper of MS-TCN, 
-```dropout``` is actually not used. For example, when train the original MS-TCN model, one can run
+One notes that the ```dropout``` argument only works for higher order information pooling. When using **FirstOrder** pooling, which is exactly the original paper of MS-TCN, ```dropout``` is actually not used. For example, when train the original MS-TCN model, one can run
 
     sh script_run_trainval.sh 50salads FirstOrder 0.5 50
 in which the dropout ratio does not apply.

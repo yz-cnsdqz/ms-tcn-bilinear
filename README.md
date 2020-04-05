@@ -1,17 +1,23 @@
-# Multistage Temporal Convolutional Network with A Bilinear Module
+# Frontal Low-rank Random Tensors for Fine-grained Action Segmentation
 
 
-## Acknowledgement
-Our code is developped based on the following work, the github repo of which is [here](https://github.com/yabufarha/ms-tcn).
+## License & Citation
+Our code following the MIT [license](LICENSE). When using our code, please cite our work
+```
+@inproceedings{PSI:2019,
+  title = {Generating 3D People in Scenes without People},
+  author = {Zhang, Yan and Hassan, Mohamed and Neumann, Heiko and Black, Michael J. and Tang, Siyu},
+  booktitle = {Computer Vision and Pattern Recognition (CVPR)},
+  month = jun,
+  year = {2020},
+  url = {https://arxiv.org/abs/1912.02923},
+  month_numeric = {6}
+}
+```
 
-    @inproceedings{farha2019ms,
-      title={Ms-tcn: Multi-stage temporal convolutional network for action segmentation},
-      author={Farha, Yazan Abu and Gall, Jurgen},
-      booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
-      pages={3575--3584},
-      year={2019}
-    }
 
+___
+## Code Description
 
 ### Training
 To train from scratch, one can run
@@ -32,53 +38,66 @@ in which the dropout ratio does not apply.
 ### Evaluation
 After training, the checkpoints are stored in the __models__ folder. Alternatively, one can download our checkpoints, and save them into the __models__ folder. To test, one can for example run
 
-    sh script_run_val.sh 50salads FirstOrder 0.5 50
+    sh script_run_val.sh breakfast RPGaussian 0.25 50
     
 
 Then, one will see the evaluation for individual splits and their average, such as 
 
-       ---------------final results -------------------
-        Acc: 73.8493
-        Edit: 64.8312
-        F1@0.10: 71.8615
-        F1@0.25: 69.2641
-        F1@0.50: 57.1429
-        Acc: 75.8682
-        Edit: 66.8940
-        F1@0.10: 71.8310
-        F1@0.25: 68.5446
-        F1@0.50: 58.6854
-        Acc: 80.5575
-        Edit: 70.5910
-        F1@0.10: 79.2541
-        F1@0.25: 76.9231
-        F1@0.50: 66.2005
-        Acc: 82.5404
-        Edit: 64.6688
-        F1@0.10: 70.2479
-        F1@0.25: 69.0083
-        F1@0.50: 63.6364
-        Acc: 83.1575
-        Edit: 68.6581
-        F1@0.10: 77.4038
-        F1@0.25: 75.4808
-        F1@0.50: 67.3077
+      ---------------final results -------------------
+        Acc: 67.4949
+        Edit: 65.4094
+        F1@0.10: 65.2132
+        F1@0.25: 60.6105
+        F1@0.50: 48.5950
+        Acc: 63.6333
+        Edit: 64.1772
+        F1@0.10: 62.1445
+        F1@0.25: 56.9267
+        F1@0.50: 44.8474
+        Acc: 62.0086
+        Edit: 62.9669
+        F1@0.10: 59.1581
+        F1@0.25: 52.1470
+        F1@0.50: 39.3073
+        Acc: 63.5422
+        Edit: 61.5132
+        F1@0.10: 61.4730
+        F1@0.25: 54.4051
+        F1@0.50: 42.0313
         ------- overall ----------
-        Acc:79.194598
-        Edit:67.128601
-        F1@10:74.119663
-        F1@25:71.844156
-        F1@50:62.594565
+        Acc:64.169759
+        Edit:63.516686
+        F1@10:61.997198
+        F1@25:56.022301
+        F1@50:43.695239
 
 
-## Data
+
+___
+## Data and Models
+
+### Data
 Please put these folders of frame-wise features in to the __data__ folder.
 
-[download](https://drive.google.com/drive/folders/16U-rtxgSe6udBNiJPVQppjiRgjezDu9O?usp=sharing)
+[download](https://github.com/yabufarha/ms-tcn)
 
 
 
-## checkpoints
+### checkpoints
 Please put these checkpoints folders in to the __models__ folder, for reproducing the results in our manuscript.
 
-[download](https://drive.google.com/drive/folders/1vCu3Srj90KefPDVkY3v29pX8T9FGq26l?usp=sharing)
+[download](https://drive.google.com/file/d/1SX4nQOA9kvUHjfalAxjF_u5e2Ruy_2m0/view?usp=sharing)
+
+
+
+___
+## Acknowledgement
+Our code is developped based on the following work, the github repo of which is [here](https://github.com/yabufarha/ms-tcn).
+
+    @inproceedings{farha2019ms,
+      title={Ms-tcn: Multi-stage temporal convolutional network for action segmentation},
+      author={Farha, Yazan Abu and Gall, Jurgen},
+      booktitle={Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
+      pages={3575--3584},
+      year={2019}
+    }

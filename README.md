@@ -1,4 +1,4 @@
-# Frontal Low-rank Random Tensors for Fine-grained Action Segmentation
+# BilinearTCN: Temporal Convolutional Network with Bilinear Pooling for Action Segmentation
 
 
 ## License & Citation

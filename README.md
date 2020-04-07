@@ -4,14 +4,11 @@
 ## License & Citation
 Our code following the MIT [license](LICENSE). When using our code, please cite our work
 ```
-@inproceedings{PSI:2019,
-  title = {Generating 3D People in Scenes without People},
-  author = {Zhang, Yan and Hassan, Mohamed and Neumann, Heiko and Black, Michael J. and Tang, Siyu},
-  booktitle = {Computer Vision and Pattern Recognition (CVPR)},
-  month = jun,
-  year = {2020},
-  url = {https://arxiv.org/abs/1912.02923},
-  month_numeric = {6}
+@article{zhang2019low,
+  title={Frontal Low-rank Random Tensors for Fine-grained Action Segmentation},
+  author={Zhang, Yan and Muandet, Krikamol and Ma, Qianli and Neumann, Heiko and Tang, Siyu},
+  journal={arXiv preprint arXiv:1906.01004},
+  year={2019}
 }
 ```
 

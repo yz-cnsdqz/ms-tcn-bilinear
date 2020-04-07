@@ -1,4 +1,4 @@
-# BilinearTCN: Temporal Convolutional Network with Bilinear Pooling for Action Segmentation
+# Frontal Low-rank Random Tensors for Fine-grained Action Segmentation
 
 
 ## License & Citation

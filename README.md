@@ -4,7 +4,7 @@
 ## License & Citation
 Our code following the MIT [license](LICENSE). When using our code, please cite our work
 ```
-@article{zhang2019low,
+@article{zhang2019frontal,
   title={Frontal Low-rank Random Tensors for Fine-grained Action Segmentation},
   author={Zhang, Yan and Muandet, Krikamol and Ma, Qianli and Neumann, Heiko and Tang, Siyu},
   journal={arXiv preprint arXiv:1906.01004},

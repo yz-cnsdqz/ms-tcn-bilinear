@@ -12,6 +12,7 @@ Our code follows the MIT [license](LICENSE). When using our code, please cite ou
 }
 ```
 
+One can read our manuscript [here](https://arxiv.org/abs/1906.01004).
 
 ![image info](images/results.PNG)
 

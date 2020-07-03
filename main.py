@@ -60,12 +60,14 @@ sample_rate = 1
 if args.dataset == "50salads":
     sample_rate = 2
 
-vid_list_file = "./data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
-vid_list_file_tst = "./data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
-features_path = "./data/"+args.dataset+"/features/"
-gt_path = "./data/"+args.dataset+"/groundTruth/"
+data_folder = '/mnt/hdd/ms-tcn-bilinear-data'
 
-mapping_file = "./data/"+args.dataset+"/mapping.txt"
+vid_list_file = data_folder+"/data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
+vid_list_file_tst = data_folder+"/data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
+features_path = data_folder+"/data/"+args.dataset+"/features/"
+gt_path = data_folder+"/data/"+args.dataset+"/groundTruth/"
+
+mapping_file = data_folder+"/data/"+args.dataset+"/mapping.txt"
 
 # model_dir = "./models/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_type,dropout,num_epochs)+args.split
 # model_dir="./models/model_backup/"+args.dataset+"_gaussian_dropout{}_ep{}_right/split_".format(dropout,num_epochs)+args.split
@@ -75,7 +77,7 @@ results_dir = "./results/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooli
 
 
 #results_dir = "./results/"+args.dataset+"/split_"+args.split
- 
+
 if not os.path.exists(model_dir):
     os.makedirs(model_dir)
 if not os.path.exists(results_dir):
@@ -95,7 +97,7 @@ trainer = Trainer(num_stages, num_layers, num_f_maps, features_dim, num_classes,
 if args.action == "train":
     batch_gen = BatchGenerator(num_classes, actions_dict, gt_path, features_path, sample_rate)
     batch_gen.read_data(vid_list_file)
-    trainer.train(model_dir, batch_gen, num_epochs=num_epochs, batch_size=bz, learning_rate=lr, 
+    trainer.train(model_dir, batch_gen, num_epochs=num_epochs, batch_size=bz, learning_rate=lr,
     	device=device)
 
 if args.action == "predict":

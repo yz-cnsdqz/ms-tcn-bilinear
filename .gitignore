@@ -1,5 +1,7 @@
 __pycache__/*
 results/*
 models/*/*
+models_backup/
 data/*/*
 .vscode/
+*.pyc

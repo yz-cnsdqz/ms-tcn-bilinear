@@ -1,6 +1,6 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+# from __future__ import absolute_import
+# from __future__ import division
+# from __future__ import print_function
 
 
 import torch
@@ -32,7 +32,7 @@ class FBM(nn.Module):
 
 
         Er_np = np.random.standard_normal([self.in_dim, self.n_factor, self.out_dim])
-        self.E = Parameter(torch.tensor(Er_np, dtype=torch.float32, 
+        self.E = Parameter(torch.tensor(Er_np, dtype=torch.float32,
                                         device=torch.device('cuda:0')),
                             requires_grad=True)
 
@@ -43,7 +43,7 @@ class FBM(nn.Module):
                             requires_grad=True)
 
 
-        
+
         self.b = Parameter(torch.zeros([1, self.out_dim, 1],
                                         dtype=torch.float32,
                                         device=torch.device('cuda:0')),
@@ -71,9 +71,9 @@ class FBM(nn.Module):
 
 
 class RPBinaryPooling(nn.Module):
-    def __init__(self, 
-                 n_basis=8, 
-                 n_rank=4, 
+    def __init__(self,
+                 n_basis=8,
+                 n_rank=4,
                  use_normalization=True):
         super(RPBinaryPooling, self).__init__()
         self.n_basis = n_basis
@@ -86,16 +86,16 @@ class RPBinaryPooling(nn.Module):
         for r in range(self.n_rank):
             Er_np = np.sign(np.random.standard_normal([self.in_dim, self.n_basis]))
             self.E_list.append(Parameter(torch.tensor(Er_np,dtype=torch.float32,
-                                                      device=torch.device('cuda:0')), 
+                                                      device=torch.device('cuda:0')),
                                         requires_grad=False)
                             )
-                               
+
             Fr_np = np.sign(np.random.standard_normal([self.in_dim, self.n_basis]))
             self.F_list.append(Parameter(torch.tensor(Fr_np,dtype=torch.float32,
-                                                      device=torch.device('cuda:0')), 
+                                                      device=torch.device('cuda:0')),
                                         requires_grad=False)
                             )
-                            
+
 
     def channel_max_normalization(self, x):
         max_vals = torch.max(torch.abs(x), dim=1, keepdim=True)[0]
@@ -110,7 +110,7 @@ class RPBinaryPooling(nn.Module):
 
         z = 0
         for r in range(self.n_rank):
-            
+
             xer = torch.matmul(x.permute([0,2,1]), self.E_list[r]).permute([0,2,1])
             xfr = torch.matmul(x.permute([0,2,1]), self.F_list[r]).permute([0,2,1])
             zr = torch.einsum('bit, bjt->bijt', xer, xfr).view(-1, self.n_basis**2, in_time)
@@ -130,8 +130,8 @@ class RPBinaryPooling(nn.Module):
 
 
 class RPGaussianPooling(nn.Module):
-    def __init__(self, 
-                 n_basis=8, 
+    def __init__(self,
+                 n_basis=8,
                  n_rank=4,
                  init_sigma = None,
                  use_normalization=False,
@@ -156,30 +156,30 @@ class RPGaussianPooling(nn.Module):
             Er_np_G = np.random.standard_normal([self.in_dim, self.in_dim])
             Er_np_square,_ = np.linalg.qr(Er_np_G)
             Er_np = Er_np_square[:, :self.n_basis]
-            sigma_r = Parameter(torch.tensor(self.init_sigma, 
-                                   dtype=torch.float32, 
+            sigma_r = Parameter(torch.tensor(self.init_sigma,
+                                   dtype=torch.float32,
                                    device=torch.device('cuda:0')),
                                 requires_grad=True)
             self.sigma_list.append(sigma_r)
             Er = Parameter(torch.tensor(Er_np,dtype=torch.float32,
-                                        device=torch.device('cuda:0')), 
+                                        device=torch.device('cuda:0')),
                            requires_grad=False)
             self.E_list.append(Er)
-                               
+
             Fr_np_G = np.random.standard_normal([self.in_dim, self.in_dim])
             Fr_np_square,_ = np.linalg.qr(Fr_np_G)
             Fr_np = Fr_np_square[:, :self.n_basis]
-            rho_r = Parameter(torch.tensor(self.init_sigma, 
-                                   dtype=torch.float32, 
+            rho_r = Parameter(torch.tensor(self.init_sigma,
+                                   dtype=torch.float32,
                                    device=torch.device('cuda:0')),
                                 requires_grad=True)
             self.rho_list.append(rho_r)
             Fr = Parameter(torch.tensor(Fr_np,dtype=torch.float32,
-                                        device=torch.device('cuda:0')), 
+                                        device=torch.device('cuda:0')),
                            requires_grad=False)
             self.F_list.append(Fr)
-             
-                            
+
+
     def channel_max_normalization(self, x):
         max_vals = torch.max(torch.abs(x), dim=1, keepdim=True)[0]
         return x / (max_vals+1e-5)
@@ -193,9 +193,9 @@ class RPGaussianPooling(nn.Module):
 
         z = 0
         for r in range(self.n_rank):
-            Er = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r] 
-            Fr = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r] 
-            
+            Er = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r]
+            Fr = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r]
+
             xer = torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1)
             xfr = torch.matmul(x.permute([0,2,1]), Fr).unsqueeze(-2)
             zr = torch.matmul(xer, xfr).view(-1, in_time, self.n_basis**2)
@@ -216,8 +216,8 @@ class RPGaussianPooling(nn.Module):
 
 
 class RPGaussianPoolingFull(nn.Module):
-    def __init__(self, 
-                 n_basis=8, 
+    def __init__(self,
+                 n_basis=8,
                  n_rank=4,
                  init_sigma = None,
                  use_normalization=False):
@@ -241,30 +241,30 @@ class RPGaussianPoolingFull(nn.Module):
             Er_np_G = np.random.standard_normal([self.in_dim, self.in_dim])
             Er_np_square,_ = np.linalg.qr(Er_np_G)
             Er_np = Er_np_square[:, :self.n_basis//2]
-            sigma_r = Parameter(torch.tensor(self.init_sigma, 
-                                   dtype=torch.float32, 
+            sigma_r = Parameter(torch.tensor(self.init_sigma,
+                                   dtype=torch.float32,
                                    device=torch.device('cuda:0')),
                                 requires_grad=True)
             self.sigma_list.append(sigma_r)
             Er = Parameter(torch.tensor(Er_np,dtype=torch.float32,
-                                        device=torch.device('cuda:0')), 
+                                        device=torch.device('cuda:0')),
                            requires_grad=False)
             self.E_list.append(Er)
-                               
+
             Fr_np_G = np.random.standard_normal([self.in_dim, self.in_dim])
             Fr_np_square,_ = np.linalg.qr(Fr_np_G)
             Fr_np = Fr_np_square[:, :self.n_basis//2]
-            rho_r = Parameter(torch.tensor(self.init_sigma, 
-                                   dtype=torch.float32, 
+            rho_r = Parameter(torch.tensor(self.init_sigma,
+                                   dtype=torch.float32,
                                    device=torch.device('cuda:0')),
                                 requires_grad=True)
             self.rho_list.append(rho_r)
             Fr = Parameter(torch.tensor(Fr_np,dtype=torch.float32,
-                                        device=torch.device('cuda:0')), 
+                                        device=torch.device('cuda:0')),
                            requires_grad=False)
             self.F_list.append(Fr)
-             
-                            
+
+
     def channel_max_normalization(self, x):
         max_vals = torch.max(torch.abs(x), dim=1, keepdim=True)[0]
         return x / (max_vals+1e-5)
@@ -278,9 +278,9 @@ class RPGaussianPoolingFull(nn.Module):
 
         z = 0
         for r in range(self.n_rank):
-            Er = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r] 
-            Fr = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r] 
-            
+            Er = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r]
+            Fr = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r]
+
             xer_cos = torch.cos(torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1))
             xer_sin = torch.sin(torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1))
             xer = torch.cat([xer_cos, xer_sin],dim=-2)
@@ -307,8 +307,8 @@ class RPGaussianPoolingFull(nn.Module):
 
 
 class RPLearnablePooling(nn.Module):
-    def __init__(self, 
-                 n_basis=8, 
+    def __init__(self,
+                 n_basis=8,
                  n_rank=1,
                  use_normalization=False):
         super(RPLearnablePooling, self).__init__()
@@ -320,12 +320,12 @@ class RPLearnablePooling(nn.Module):
         for r in range(self.n_rank):
             Er = np.random.standard_normal([self.in_dim, self.n_basis])
             self.E_list.append(Parameter(torch.tensor(Er,dtype=torch.float32,
-                                                      device=torch.device('cuda:0')), 
+                                                      device=torch.device('cuda:0')),
                                         requires_grad=True)
                                )
             Fr = np.random.standard_normal([self.in_dim, self.n_basis])
             self.F_list.append(Parameter(torch.tensor(Fr,dtype=torch.float32,
-                                                      device=torch.device('cuda:0')), 
+                                                      device=torch.device('cuda:0')),
                                         requires_grad=True)
                                )
 
@@ -334,7 +334,7 @@ class RPLearnablePooling(nn.Module):
 
         z = 0
         for r in range(self.n_rank):
-            
+
             xer = torch.matmul(x.permute([0,2,1]), self.E_list[r]).unsqueeze(-1)
             xfr = torch.matmul(x.permute([0,2,1]), self.F_list[r]).unsqueeze(-2)
             zr = torch.matmul(xer, xfr).view(-1, in_time, self.n_basis**2)
@@ -349,7 +349,7 @@ class RPLearnablePooling(nn.Module):
 
 
 class MLBPooling(nn.Module):
-    def __init__(self, 
+    def __init__(self,
                  n_basis=8,
                  use_normalization=False):
         super(MLBPooling, self).__init__()
@@ -360,21 +360,21 @@ class MLBPooling(nn.Module):
 
         Er = np.random.standard_normal([self.in_dim, self.n_basis])
         self.Er_torch=Parameter(torch.tensor(Er,dtype=torch.float32,
-                                                  device=torch.device('cuda:0')), 
+                                                  device=torch.device('cuda:0')),
                                     requires_grad=True)
 
         Fr = np.random.standard_normal([self.in_dim, self.n_basis])
         self.Fr_torch=Parameter(torch.tensor(Fr,dtype=torch.float32,
-                                                device=torch.device('cuda:0')), 
+                                                device=torch.device('cuda:0')),
                                     requires_grad=True)
-        
-        self.b = Parameter(torch.zeros([1, self.n_basis, 1], 
+
+        self.b = Parameter(torch.zeros([1, self.n_basis, 1],
                                        dtype=torch.float32,
                                        device=torch.device('cuda:0')),
-                           requires_grad=True)         
-    
+                           requires_grad=True)
 
-                                   
+
+
     def channel_max_normalization(self, x):
         max_vals = torch.max(torch.abs(x), dim=1, keepdim=True)[0]
         return x / (max_vals+1e-5)
@@ -384,12 +384,12 @@ class MLBPooling(nn.Module):
 
     def forward(self, x):
         in_time = x.shape[2]
-        
+
         xer = torch.matmul(x.permute([0,2,1]), self.Er_torch).permute([0,2,1])
         xfr = torch.matmul(x.permute([0,2,1]), self.Fr_torch).permute([0,2,1])
         out = xer * xfr + self.b
 
-                   
+
         if self.use_normalization:
             out = torch.sign(out) * (torch.sqrt(torch.abs(out)+1e-2)-np.sqrt(1e-2))
             # out = torch.sign(out) * torch.sqrt(torch.abs(out))
@@ -409,24 +409,24 @@ class MultiStageModel(nn.Module):
         if pooling_type in ['RPGaussian', 'RPBinary', 'RPGaussianFull', 'Hadamard', 'FBM']:
 
             self.stage1 = SingleStageModelBilinear(num_layers, num_f_maps, dim, num_classes,
-                                            pooling_type=pooling_type, 
+                                            pooling_type=pooling_type,
                                             dropout=dropout)
-            self.stages = nn.ModuleList([copy.deepcopy(SingleStageModel(num_layers, 
-                                                num_f_maps, num_classes, num_classes)) 
+            self.stages = nn.ModuleList([copy.deepcopy(SingleStageModel(num_layers,
+                                                num_f_maps, num_classes, num_classes))
                                         for s in range(num_stages-1)])
 
         else:
             self.stage1 = SingleStageModel(num_layers, num_f_maps, dim, num_classes)
-            self.stages = nn.ModuleList([copy.deepcopy(SingleStageModel(num_layers, 
-                                                num_f_maps, num_classes, num_classes)) 
+            self.stages = nn.ModuleList([copy.deepcopy(SingleStageModel(num_layers,
+                                                num_f_maps, num_classes, num_classes))
                                         for s in range(num_stages-1)])
 
 
-    def forward(self, x):
-        out = self.stage1(x)
+    def forward(self, x, mask):
+        out = self.stage1(x, mask)
         outputs = out.unsqueeze(0)
         for s in self.stages:
-            out = s(F.softmax(out, dim=1))
+            out = s(F.softmax(out, dim=1) * mask[:, 0:1, :], mask)
             outputs = torch.cat((outputs, out.unsqueeze(0)), dim=0)
         return outputs
 
@@ -436,14 +436,15 @@ class SingleStageModel(nn.Module):
     def __init__(self, num_layers, num_f_maps, dim, num_classes):
         super(SingleStageModel, self).__init__()
         self.conv_1x1 = nn.Conv1d(dim, num_f_maps, 1)
-        self.layers = nn.ModuleList([copy.deepcopy(DilatedResidualLayer(2 ** i, num_f_maps, num_f_maps)) for i in range(num_layers)])
+        self.layers = nn.ModuleList([copy.deepcopy(DilatedResidualLayer(2 ** i, num_f_maps,
+                                        num_f_maps)) for i in range(num_layers)])
         self.conv_out = nn.Conv1d(num_f_maps, num_classes, 1)
 
-    def forward(self, x):
+    def forward(self, x, mask):
         out = self.conv_1x1(x)
         for layer in self.layers:
-            out = layer(out)
-        out = self.conv_out(out)
+            out = layer(out, mask)
+        out = self.conv_out(out) * mask[:, 0:1, :]
         return out
 
 
@@ -463,17 +464,17 @@ class SingleStageModelBilinear(nn.Module):
         self.drop_p = dropout
 
         if pooling_type=='RPBinary':
-            self.bilinear_layer = RPBinaryPooling(n_basis=int(dim_factor*sqrt_dim), 
-                                                 n_rank=4, 
+            self.bilinear_layer = RPBinaryPooling(n_basis=int(dim_factor*sqrt_dim),
+                                                 n_rank=4,
                                                  use_normalization=False)
         elif pooling_type=='RPGaussian':
-            self.bilinear_layer = RPGaussianPooling(n_basis=int(dim_factor*sqrt_dim), 
-                                                   n_rank=4, 
+            self.bilinear_layer = RPGaussianPooling(n_basis=int(dim_factor*sqrt_dim),
+                                                   n_rank=4,
                                                    init_sigma=sqrt_dim,
                                                    use_normalization=False)
         elif pooling_type == 'RPGaussianFull':
-            self.bilinear_layer = RPGaussianPoolingFull(n_basis=int(dim_factor*sqrt_dim), 
-                                                   n_rank=4, 
+            self.bilinear_layer = RPGaussianPoolingFull(n_basis=int(dim_factor*sqrt_dim),
+                                                   n_rank=4,
                                                    init_sigma=sqrt_dim,
                                                    use_normalization=False)
         elif pooling_type=='Hadamard':
@@ -487,23 +488,23 @@ class SingleStageModelBilinear(nn.Module):
             sys.exit()
 
 
-    def forward(self, x):
+    def forward(self, x, mask):
 
         out = self.conv_1x1(x)
 
         for layer in self.layers:
-            out = layer(out)
+            out = layer(out, mask)
 
         # # ####### apply bilinear residual module here! ####
-        out2 = self.bilinear_layer(out)
-        out2 = self.conv_1x1_b(out2)
+        out2 = self.bilinear_layer(out)* mask[:, 0:1, :]
+        out2 = self.conv_1x1_b(out2)* mask[:, 0:1, :]
         if self.drop_p > 0:
             out2 = self.drop(out2)
-        
+
         # #########################################
         #out = self.conv_out(out)
 
-        return out2
+        return out2* mask[:, 0:1, :]
 
 
 
@@ -513,13 +514,12 @@ class DilatedResidualLayer(nn.Module):
         self.conv_dilated = nn.Conv1d(in_channels, out_channels, 3, padding=dilation, dilation=dilation)
         self.conv_1x1 = nn.Conv1d(out_channels, out_channels, 1)
         self.dropout = nn.Dropout()
-        
 
-    def forward(self, x):
+    def forward(self, x, mask):
         out = F.relu(self.conv_dilated(x))
         out = self.conv_1x1(out)
         out = self.dropout(out)
-        return x + out
+        return (x + out) * mask[:, 0:1, :]
 
 
 
@@ -531,14 +531,12 @@ class Trainer:
         self.ce = nn.CrossEntropyLoss(ignore_index=-100)
         self.mse = nn.MSELoss(reduction='none')
         self.num_classes = num_classes
-        print('[INFO] -----------device: '+ str(torch.cuda.get_device_name()))
+        # print('[INFO] -----------device: '+ str(torch.cuda.get_device_name()))
 
 
     def train(self, save_dir, batch_gen, num_epochs, batch_size, learning_rate, device):
         self.model.train()
         self.model.to(device)
-        loss_lambda = 0.15
-        loss_tau = 4.0
         optimizer = optim.Adam(self.model.parameters(), lr=learning_rate)
 
         for epoch in range(num_epochs):
@@ -550,12 +548,12 @@ class Trainer:
                 batch_input, batch_target, mask = batch_gen.next_batch(batch_size)
                 batch_input, batch_target, mask = batch_input.to(device), batch_target.to(device), mask.to(device)
                 optimizer.zero_grad()
-                predictions = self.model(batch_input)
+                predictions = self.model(batch_input, mask)
 
                 loss = 0
                 for p in predictions:
                     loss += self.ce(p.transpose(2, 1).contiguous().view(-1, self.num_classes), batch_target.view(-1))
-                    loss += loss_lambda*torch.mean(torch.clamp(self.mse(F.log_softmax(p[:, :, 1:], dim=1), F.log_softmax(p.detach()[:, :, :-1], dim=1)), min=0, max=loss_tau**2)*mask[:, :, 1:])
+                    loss += 0.15*torch.mean(torch.clamp(self.mse(F.log_softmax(p[:, :, 1:], dim=1), F.log_softmax(p.detach()[:, :, :-1], dim=1)), min=0, max=16)*mask[:, :, 1:])
 
                 epoch_loss += loss.item()
                 loss.backward()
@@ -566,40 +564,64 @@ class Trainer:
                 total += torch.sum(mask[:, 0, :]).item()
 
             batch_gen.reset()
-            acc = float(correct)/total
-            # if acc-acc_pre < -0.005:
-            #     break
+
             if (epoch+1) % 10 == 0:
                 torch.save(self.model.state_dict(), save_dir + "/epoch-" + str(epoch + 1) + ".model")
                 torch.save(optimizer.state_dict(), save_dir + "/epoch-" + str(epoch + 1) + ".opt")
+
             print("[epoch %d]: epoch loss = %f,   acc = %f" % (epoch + 1, epoch_loss / len(batch_gen.list_of_examples),
                                                                 float(correct)/total))
 
 
 
+    # def predict(self, model_dir, results_dir, features_path, vid_list_file, epoch, actions_dict, device, sample_rate):
+    #     self.model.eval()
+    #     with torch.no_grad():
+    #         self.model.to(device)
+    #         self.model.load_state_dict(torch.load(model_dir + "/epoch-" + str(epoch) + ".model"))
+    #         file_ptr = open(vid_list_file, 'r')
+    #         list_of_vids = file_ptr.read().split('\n')[:-1]
+    #         file_ptr.close()
+    #         for vid in list_of_vids:
+
+    #             features = np.load(features_path + vid.split('.')[0] + '.npy')
+    #             features = features[:, ::sample_rate]
+    #             input_x = torch.tensor(features, dtype=torch.float)
+    #             input_x.unsqueeze_(0)
+    #             input_x = input_x.to(device)
+    #             predictions = self.model(input_x, torch.ones(input_x.size(), device=device))
+    #             _, predicted = torch.max(predictions[-1].data, 1)
+    #             predicted = predicted.squeeze()
+    #             recognition = []
+    #             for i in range(len(predicted)):
+    #                 action_dict_key_list = list(actions_dict.keys())
+    #                 recognition = np.concatenate((recognition, [action_dict_key_list[list(actions_dict.values()).index(predicted[i].item())]]*sample_rate))
+    #             f_name = vid.split('/')[-1].split('.')[0]
+    #             f_ptr = open(results_dir + "/" + f_name, "w")
+    #             f_ptr.write("### Frame level recognition: ###\n")
+    #             f_ptr.write(' '.join(recognition))
+    #             f_ptr.close()
+
     def predict(self, model_dir, results_dir, features_path, vid_list_file, epoch, actions_dict, device, sample_rate):
         self.model.eval()
         with torch.no_grad():
             self.model.to(device)
-            # epoch=50
             self.model.load_state_dict(torch.load(model_dir + "/epoch-" + str(epoch) + ".model"))
             file_ptr = open(vid_list_file, 'r')
             list_of_vids = file_ptr.read().split('\n')[:-1]
             file_ptr.close()
             for vid in list_of_vids:
-                #print (vid)
                 features = np.load(features_path + vid.split('.')[0] + '.npy')
                 features = features[:, ::sample_rate]
                 input_x = torch.tensor(features, dtype=torch.float)
                 input_x.unsqueeze_(0)
                 input_x = input_x.to(device)
-                predictions = self.model(input_x)
+                predictions = self.model(input_x, torch.ones(input_x.size(), device=device))
                 _, predicted = torch.max(predictions[-1].data, 1)
                 predicted = predicted.squeeze()
                 recognition = []
                 for i in range(len(predicted)):
-                    action_dict_key_list = list(actions_dict.keys())
-                    recognition = np.concatenate((recognition, [action_dict_key_list[list(actions_dict.values()).index(predicted[i].item())]]*sample_rate))
+                    recognition = np.concatenate((recognition, [actions_dict.keys()[actions_dict.values().index(predicted[i].item())]]*sample_rate))
                 f_name = vid.split('/')[-1].split('.')[0]
                 f_ptr = open(results_dir + "/" + f_name, "w")
                 f_ptr.write("### Frame level recognition: ###\n")

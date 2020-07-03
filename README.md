@@ -1,4 +1,4 @@
-# Frontal Low-rank Random Tensors for Fine-grained Action Segmentation
+# BilinearTCN: Frontal Low-rank Random Tensors for Fine-grained Action Segmentation
 
 
 ## License & Citation

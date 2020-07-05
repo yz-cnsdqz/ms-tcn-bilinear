@@ -1,5 +1,10 @@
 #!/bin/bash
 
+#source 
+#module load cuda/9.0
+#module load cudnn/7.5-cu9.0
+
+
 dataset=$1
 pooling=$2
 dropout=$3

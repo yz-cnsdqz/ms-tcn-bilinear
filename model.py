@@ -58,8 +58,8 @@ class FBM(nn.Module):
 
     def forward(self, x):
 
-        first_term = torch.einsum('bdt, dc->bct',x, self.W)
-        second_term = torch.einsum('bdt, dkc->bct', x, self.E)
+        first_term = torch.einsum('bdt, dc->bct',(x, self.W))
+        second_term = torch.einsum('bdt, dkc->bct', (x, self.E))
         out = self.b + first_term + second_term
 
         if self.use_normalization:
@@ -82,7 +82,7 @@ class RPBinaryPooling(nn.Module):
         self.E_list = nn.ParameterList([])
         self.F_list = nn.ParameterList([])
         self.use_normalization = use_normalization
-        np.random.seed(seed=1538574472)
+        np.random.seed(seed=15385)
         for r in range(self.n_rank):
             Er_np = np.sign(np.random.standard_normal([self.in_dim, self.n_basis]))
             self.E_list.append(Parameter(torch.tensor(Er_np,dtype=torch.float32,
@@ -111,10 +111,15 @@ class RPBinaryPooling(nn.Module):
         z = 0
         for r in range(self.n_rank):
             
-            xer = torch.matmul(x.permute([0,2,1]), self.E_list[r]).permute([0,2,1])
-            xfr = torch.matmul(x.permute([0,2,1]), self.F_list[r]).permute([0,2,1])
-            zr = torch.einsum('bit, bjt->bijt', xer, xfr).view(-1, self.n_basis**2, in_time)
-            z += zr
+#            xer = torch.matmul(x.permute([0,2,1]), self.E_list[r]).permute([0,2,1])
+#            xfr = torch.matmul(x.permute([0,2,1]), self.F_list[r]).permute([0,2,1])
+#            zr = torch.einsum('bit, bjt->bijt', (xer, xfr)).view(-1, self.n_basis**2, in_time)
+#            z += zr
+            xer = torch.matmul(x.permute([0,2,1]), self.E_list[r]).unsqueeze(-1)
+            xfr = torch.matmul(x.permute([0,2,1]), self.F_list[r]).unsqueeze(-2)
+            zr = torch.matmul(xer, xfr).view(-1, in_time, self.n_basis**2)
+            z+=zr.permute(0, 2, 1)
+
 
         out = z / (self.n_rank*self.n_basis)
 
@@ -125,7 +130,6 @@ class RPBinaryPooling(nn.Module):
             out = self.channel_max_normalization(out)
 
         return out
-
 
 
 
@@ -146,11 +150,10 @@ class RPGaussianPooling(nn.Module):
         self.sigma_list = nn.ParameterList([])
         self.rho_list = nn.ParameterList([])
         self.use_normalization = use_normalization
-        np.random.seed(seed=1538574472)
+        np.random.seed(seed=15385)
 
         if self.init_sigma is None:
             self.init_sigma = np.sqrt(self.in_dim)
-
 
         for r in range(self.n_rank):
             Er_np_G = np.random.standard_normal([self.in_dim, self.in_dim])
@@ -193,9 +196,13 @@ class RPGaussianPooling(nn.Module):
 
         z = 0
         for r in range(self.n_rank):
-            Er = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r] 
-            Fr = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r] 
+
+            Er = self.in_dim**0.5 / (1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r] 
+            Fr = self.in_dim**0.5 / (1e-5+torch.abs(self.rho_list[r])) * self.F_list[r] 
             
+            #Er = self.E_list[r] 
+            #Fr = self.F_list[r] 
+         
             xer = torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1)
             xfr = torch.matmul(x.permute([0,2,1]), Fr).unsqueeze(-2)
             zr = torch.matmul(xer, xfr).view(-1, in_time, self.n_basis**2)
@@ -278,8 +285,8 @@ class RPGaussianPoolingFull(nn.Module):
 
         z = 0
         for r in range(self.n_rank):
-            Er = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r] 
-            Fr = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r] 
+            Er = self.in_dim**0.5 / (1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r] 
+            Fr = self.in_dim**0.5 / (1e-5+torch.abs(self.rho_list[r])) * self.F_list[r] 
             
             xer_cos = torch.cos(torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1))
             xer_sin = torch.sin(torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1))
@@ -531,7 +538,7 @@ class Trainer:
         self.ce = nn.CrossEntropyLoss(ignore_index=-100)
         self.mse = nn.MSELoss(reduction='none')
         self.num_classes = num_classes
-        print('[INFO] -----------device: '+ str(torch.cuda.get_device_name()))
+        #print('[INFO] -----------device: '+ str(torch.cuda.get_device_name()))
 
 
     def train(self, save_dir, batch_gen, num_epochs, batch_size, learning_rate, device):

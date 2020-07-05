@@ -1,3 +1,0 @@
-- download the checkpoints and put them here.
-- pls check the path in main.py before training or evaluating.
-- For each setting, the checkpoint folder name has the format of {dataset}_{pooling}_dropout{drop ratio}_ep{num_epochs}

@@ -12,7 +12,7 @@ import random
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-seed = 1538574472
+seed = 153555
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed_all(seed)
@@ -60,12 +60,16 @@ sample_rate = 1
 if args.dataset == "50salads":
     sample_rate = 2
 
-vid_list_file = "./data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
-vid_list_file_tst = "./data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
-features_path = "./data/"+args.dataset+"/features/"
-gt_path = "./data/"+args.dataset+"/groundTruth/"
 
-mapping_file = "./data/"+args.dataset+"/mapping.txt"
+proj_folder = os.path.abspath(os.getcwd())
+
+
+vid_list_file = proj_folder+"/data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
+vid_list_file_tst = proj_folder+"/data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
+features_path = proj_folder+"/data/"+args.dataset+"/features/"
+gt_path = proj_folder+"/data/"+args.dataset+"/groundTruth/"
+
+mapping_file = proj_folder+"/data/"+args.dataset+"/mapping.txt"
 
 # model_dir = "./models/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_type,dropout,num_epochs)+args.split
 # model_dir="./models/model_backup/"+args.dataset+"_gaussian_dropout{}_ep{}_right/split_".format(dropout,num_epochs)+args.split

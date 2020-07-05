@@ -3,3 +3,8 @@ results/*
 models/*/*
 data/*/*
 .vscode/
+mpi_clusters/*.err
+mpi_clusters/*.log
+mpi_clusters/*.out
+*.pyc
+

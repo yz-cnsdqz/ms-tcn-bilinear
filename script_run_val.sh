@@ -7,7 +7,7 @@ epoch=$4
 
 splits=$(seq 1 4)
 if [ "$dataset" == 50salads ]
-then 
+then
     splits=$(seq 1 5)
 fi
 

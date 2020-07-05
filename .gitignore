@@ -1,6 +1,7 @@
 __pycache__/*
 results/*
 models/*/*
+models_backup/
 data/*/*
 .vscode/
 mpi_clusters/*.err

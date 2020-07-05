@@ -1,5 +1,4 @@
 #!/usr/bin/python2.7
-
 # adapted from: https://github.com/colincsl/TemporalConvolutionalNetworks/blob/master/code/metrics.py
 
 import numpy as np
@@ -11,7 +10,6 @@ def read_file(path):
         content = f.read()
         f.close()
     return content
-
 
 
 def get_labels_start_end_time(frame_wise_labels, bg_class=["background"]):
@@ -92,13 +90,17 @@ def f_score(recognized, ground_truth, overlap, bg_class=["background"]):
     return float(tp), float(fp), float(fn)
 
 
-def main(args):
+def main():
+    parser = argparse.ArgumentParser()
 
-    data_path = '/mnt/hdd/ms-tcn-bilinear-data'
+    parser.add_argument('--dataset', default="gtea")
+    parser.add_argument('--split', default='1')
 
-    ground_truth_path = data_path+"/data/"+args.dataset+"/groundTruth/"
-    file_list = data_path+"/data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
-    recog_path = "./results/"+args.dataset+"_{}_dropout{}_ep{}/split_{}/".format(args.pooling,args.dropout,args.epoch,args.split)
+    args = parser.parse_args()
+
+    ground_truth_path = "./data/"+args.dataset+"/groundTruth/"
+    recog_path = "./results/"+args.dataset+"/split_"+args.split+"/"
+    file_list = "./data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
 
     list_of_videos = read_file(file_list).split('\n')[:-1]
 
@@ -129,63 +131,17 @@ def main(args):
             fp[s] += fp1
             fn[s] += fn1
 
-    print ("Acc: %.4f" % (100*float(correct)/total) )
-    print ('Edit: %.4f' % ((1.0*edit)/len(list_of_videos)) )
-    acc = 100*float(correct)/total
-    edit= (1.0*edit)/len(list_of_videos)
-    f1_list = []
+    print "Acc: %.4f" % (100*float(correct)/total)
+    print 'Edit: %.4f' % ((1.0*edit)/len(list_of_videos))
     for s in range(len(overlap)):
         precision = tp[s] / float(tp[s]+fp[s])
         recall = tp[s] / float(tp[s]+fn[s])
+
         f1 = 2.0 * (precision*recall) / (precision+recall)
+
         f1 = np.nan_to_num(f1)*100
-        print ('F1@%0.2f: %.4f' % (overlap[s], f1))
-        f1_list.append(f1)
-
-    return [acc, edit] + f1_list
-
-
-
+        print 'F1@%0.2f: %.4f' % (overlap[s], f1)
 
 
 if __name__ == '__main__':
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', default="gtea")
-    parser.add_argument('--pooling',default='FirstOrder')
-    parser.add_argument('--dropout',default=0.5)
-    parser.add_argument('--epoch',default=50)
-
-    args = parser.parse_args()
-
-    n_splits=4
-    if args.dataset=='50salads':
-        n_splits=5
-
-    acc_all = 0
-    edit_all = 0
-    f1_10_all = 0
-    f1_25_all = 0
-    f1_50_all = 0
-
-    for split in range(n_splits):
-        setattr(args, 'split',str(split+1))
-
-        [acc, edit, f1_10, f1_25, f1_50] = main(args)
-        acc_all += acc / n_splits
-        edit_all += edit / n_splits
-        f1_10_all += f1_10 / n_splits
-        f1_25_all += f1_25 / n_splits
-        f1_50_all += f1_50 / n_splits
-
-    print('------- overall ----------')
-    print('Acc:{:f}'.format(acc_all))
-    print('Edit:{:f}'.format(edit_all))
-    print('F1@10:{:f}'.format(f1_10_all))
-    print('F1@25:{:f}'.format(f1_25_all))
-    print('F1@50:{:f}'.format(f1_50_all))
-
-
-
-
-
+    main()

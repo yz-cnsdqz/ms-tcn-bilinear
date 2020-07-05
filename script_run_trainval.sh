@@ -14,10 +14,10 @@ fi
 
 for i in $splits;
 do
-	python main.py --action=train --dataset=$dataset --split=$i --pooling=$pooling --dropout=$dropout --epoch=$epoch
-	python main.py --action=predict --dataset=$dataset --split=$i --pooling=$pooling --dropout=$dropout --epoch=$epoch
+	python main.py --action=train --dataset=$dataset --split=$i
+	python main.py --action=predict --dataset=$dataset --split=$i
 	echo $dataset training/eval done: split-"$i"
 done
 
-echo ---------------final results -------------------
-python eval.py --dataset=$dataset --pooling=$pooling --dropout=$dropout --epoch=$epoch
+# echo ---------------final results -------------------
+# python eval.py --dataset=$dataset --pooling=$pooling --dropout=$dropout --epoch=$epoch

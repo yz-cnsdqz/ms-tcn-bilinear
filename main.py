@@ -9,7 +9,7 @@ import random
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-seed = 153
+seed = 1538574472
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed_all(seed)
@@ -19,10 +19,6 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--action', default='train')
 parser.add_argument('--dataset', default="gtea")
 parser.add_argument('--split', default='1')
-parser.add_argument('--pooling', default='RPGaussian')
-parser.add_argument('--dropout', default='0.7')
-parser.add_argument('--epoch', default='50')
-
 
 args = parser.parse_args()
 
@@ -31,18 +27,8 @@ num_layers = 10
 num_f_maps = 64
 features_dim = 2048
 bz = 1
-# lr=0.0005 # original
 lr = 0.0005
-
-pooling_type=args.pooling
-dropout = float(args.dropout)
-num_epochs = int(args.epoch)
-
-
-
-print('-------------config:dataset={}, lr={}, ep_max={}, pooling={}, dropout={}----------'.format(args.dataset,lr, num_epochs,
-	pooling_type, dropout))
-
+num_epochs = 50
 
 # use the full temporal resolution @ 15fps
 sample_rate = 1
@@ -51,22 +37,15 @@ sample_rate = 1
 if args.dataset == "50salads":
     sample_rate = 2
 
-data_folder = '/mnt/hdd/ms-tcn-bilinear-data'
+vid_list_file = "./data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
+vid_list_file_tst = "./data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
+features_path = "./data/"+args.dataset+"/features/"
+gt_path = "./data/"+args.dataset+"/groundTruth/"
 
-vid_list_file = data_folder+"/data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
-vid_list_file_tst = data_folder+"/data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
-features_path = data_folder+"/data/"+args.dataset+"/features/"
-gt_path = data_folder+"/data/"+args.dataset+"/groundTruth/"
+mapping_file = "./data/"+args.dataset+"/mapping.txt"
 
-mapping_file = data_folder+"/data/"+args.dataset+"/mapping.txt"
-
-# model_dir = "./models/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_type,dropout,num_epochs)+args.split
-# model_dir="./models/model_backup/"+args.dataset+"_gaussian_dropout{}_ep{}_right/split_".format(dropout,num_epochs)+args.split
-# model_dir = "/home/yzhang/workspaces/ms-tcn-bilinear/models/model_backup/"+args.dataset+"_{}_dropout{}_ep{}_right/split_".format(pooling_type,dropout,num_epochs)+args.split
-model_dir = "./models/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_type,dropout,num_epochs)+args.split
-results_dir = "./results/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_type,dropout,num_epochs)+args.split
-
-
+model_dir = "./models/"+args.dataset+"/split_"+args.split
+results_dir = "./results/"+args.dataset+"/split_"+args.split
 
 if not os.path.exists(model_dir):
     os.makedirs(model_dir)
@@ -82,13 +61,11 @@ for a in actions:
 
 num_classes = len(actions_dict)
 
-trainer = Trainer(num_stages, num_layers, num_f_maps, features_dim, num_classes,
-	pooling_type=pooling_type, dropout=dropout)
+trainer = Trainer(num_stages, num_layers, num_f_maps, features_dim, num_classes)
 if args.action == "train":
     batch_gen = BatchGenerator(num_classes, actions_dict, gt_path, features_path, sample_rate)
     batch_gen.read_data(vid_list_file)
-    trainer.train(model_dir, batch_gen, num_epochs=num_epochs, batch_size=bz, learning_rate=lr,
-    	device=device)
+    trainer.train(model_dir, batch_gen, num_epochs=num_epochs, batch_size=bz, learning_rate=lr, device=device)
 
 if args.action == "predict":
     trainer.predict(model_dir, results_dir, features_path, vid_list_file_tst, num_epochs, actions_dict, device, sample_rate)

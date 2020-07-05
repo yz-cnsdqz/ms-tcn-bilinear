@@ -1,6 +1,4 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+#!/usr/bin/python2.7
 
 import torch
 import numpy as np
@@ -49,10 +47,9 @@ class BatchGenerator(object):
             batch_target.append(classes[::self.sample_rate])
 
         length_of_sequences = map(len, batch_target)
-        max_length_of_seq = max(length_of_sequences)
-        batch_input_tensor = torch.zeros(len(batch_input), np.shape(batch_input[0])[0], max_length_of_seq, dtype=torch.float)
-        batch_target_tensor = torch.ones(len(batch_input), max_length_of_seq, dtype=torch.long)*(-100)
-        mask = torch.zeros(len(batch_input), self.num_classes, max_length_of_seq, dtype=torch.float)
+        batch_input_tensor = torch.zeros(len(batch_input), np.shape(batch_input[0])[0], max(length_of_sequences), dtype=torch.float)
+        batch_target_tensor = torch.ones(len(batch_input), max(length_of_sequences), dtype=torch.long)*(-100)
+        mask = torch.zeros(len(batch_input), self.num_classes, max(length_of_sequences), dtype=torch.float)
         for i in range(len(batch_input)):
             batch_input_tensor[i, :, :np.shape(batch_input[i])[1]] = torch.from_numpy(batch_input[i])
             batch_target_tensor[i, :np.shape(batch_target[i])[0]] = torch.from_numpy(batch_target[i])

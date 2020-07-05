@@ -1,7 +1,4 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
+#!/usr/bin/python2.7
 
 import torch
 from model import Trainer
@@ -12,7 +9,7 @@ import random
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-seed = 1538574472
+seed = 153
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed_all(seed)
@@ -24,7 +21,7 @@ parser.add_argument('--dataset', default="gtea")
 parser.add_argument('--split', default='1')
 parser.add_argument('--pooling', default='RPGaussian')
 parser.add_argument('--dropout', default='0.7')
-parser.add_argument('--epoch', default='70')
+parser.add_argument('--epoch', default='50')
 
 
 args = parser.parse_args()
@@ -33,7 +30,6 @@ num_stages = 4
 num_layers = 10
 num_f_maps = 64
 features_dim = 2048
-# bz=1 # original
 bz = 1
 # lr=0.0005 # original
 lr = 0.0005
@@ -42,11 +38,6 @@ pooling_type=args.pooling
 dropout = float(args.dropout)
 num_epochs = int(args.epoch)
 
-
-# #gtea, random rp
-#num_epochs = 50
-#50 salads, random rp
-#num_epochs = 70
 
 
 print('-------------config:dataset={}, lr={}, ep_max={}, pooling={}, dropout={}----------'.format(args.dataset,lr, num_epochs,
@@ -76,7 +67,6 @@ model_dir = "./models/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_
 results_dir = "./results/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_type,dropout,num_epochs)+args.split
 
 
-#results_dir = "./results/"+args.dataset+"/split_"+args.split
 
 if not os.path.exists(model_dir):
     os.makedirs(model_dir)

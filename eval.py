@@ -1,9 +1,6 @@
+#!/usr/bin/python2.7
+
 # adapted from: https://github.com/colincsl/TemporalConvolutionalNetworks/blob/master/code/metrics.py
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 
 import numpy as np
 import argparse
@@ -14,6 +11,7 @@ def read_file(path):
         content = f.read()
         f.close()
     return content
+
 
 
 def get_labels_start_end_time(frame_wise_labels, bg_class=["background"]):
@@ -38,7 +36,7 @@ def get_labels_start_end_time(frame_wise_labels, bg_class=["background"]):
 
 
 def levenstein(p, y, norm=False):
-    m_row = len(p)    
+    m_row = len(p)
     n_col = len(y)
     D = np.zeros([m_row+1, n_col+1], np.float)
     for i in range(m_row+1):
@@ -54,7 +52,7 @@ def levenstein(p, y, norm=False):
                 D[i, j] = min(D[i-1, j] + 1,
                               D[i, j-1] + 1,
                               D[i-1, j-1] + 1)
-    
+
     if norm:
         score = (1 - D[-1, -1]/max(m_row, n_col)) * 100
     else:
@@ -95,10 +93,13 @@ def f_score(recognized, ground_truth, overlap, bg_class=["background"]):
 
 
 def main(args):
-    ground_truth_path = "./data/"+args.dataset+"/groundTruth/"
-#    recog_path = "./results/"+args.dataset+"/split_"+args.split+"/"
-    file_list = "./data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
+
+    data_path = '/mnt/hdd/ms-tcn-bilinear-data'
+
+    ground_truth_path = data_path+"/data/"+args.dataset+"/groundTruth/"
+    file_list = data_path+"/data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
     recog_path = "./results/"+args.dataset+"_{}_dropout{}_ep{}/split_{}/".format(args.pooling,args.dropout,args.epoch,args.split)
+
     list_of_videos = read_file(file_list).split('\n')[:-1]
 
     overlap = [.1, .25, .5]
@@ -111,7 +112,7 @@ def main(args):
     for vid in list_of_videos:
         gt_file = ground_truth_path + vid
         gt_content = read_file(gt_file).split('\n')[0:-1]
-        
+
         recog_file = recog_path + vid.split('.')[0]
         recog_content = read_file(recog_file).split('\n')[1].split()
 
@@ -119,7 +120,7 @@ def main(args):
             total += 1
             if gt_content[i] == recog_content[i]:
                 correct += 1
-        
+
         edit += edit_score(recog_content, gt_content)
 
         for s in range(len(overlap)):
@@ -127,18 +128,16 @@ def main(args):
             tp[s] += tp1
             fp[s] += fp1
             fn[s] += fn1
-            
+
     print ("Acc: %.4f" % (100*float(correct)/total) )
-    print ('Edit: %.4f' % ((1.0*edit)/len(list_of_videos)))
+    print ('Edit: %.4f' % ((1.0*edit)/len(list_of_videos)) )
     acc = 100*float(correct)/total
-    edit=((1.0*edit)/len(list_of_videos))
+    edit= (1.0*edit)/len(list_of_videos)
     f1_list = []
     for s in range(len(overlap)):
         precision = tp[s] / float(tp[s]+fp[s])
         recall = tp[s] / float(tp[s]+fn[s])
-    
         f1 = 2.0 * (precision*recall) / (precision+recall)
-
         f1 = np.nan_to_num(f1)*100
         print ('F1@%0.2f: %.4f' % (overlap[s], f1))
         f1_list.append(f1)
@@ -158,7 +157,7 @@ if __name__ == '__main__':
     parser.add_argument('--epoch',default=50)
 
     args = parser.parse_args()
-    
+
     n_splits=4
     if args.dataset=='50salads':
         n_splits=5
@@ -185,7 +184,7 @@ if __name__ == '__main__':
     print('F1@10:{:f}'.format(f1_10_all))
     print('F1@25:{:f}'.format(f1_25_all))
     print('F1@50:{:f}'.format(f1_50_all))
-     
+
 
 
 

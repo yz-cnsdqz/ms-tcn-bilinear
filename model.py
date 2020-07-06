@@ -48,9 +48,9 @@ class RPBinaryPooling(nn.Module):
         z = 0
         for r in range(self.n_rank):
 
-            xer = torch.matmul(x.permute([0,2,1]), self.E_list[r]).permute([0,2,1])
-            xfr = torch.matmul(x.permute([0,2,1]), self.F_list[r]).permute([0,2,1])
-            zr = torch.einsum('bit, bjt->bijt', (xer, xfr)).view(-1, self.n_basis**2, in_time)
+            xer = torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1)
+            xfr = torch.matmul(x.permute([0,2,1]), Fr).unsqueeze(-2)
+            zr = torch.matmul(xer, xfr).view(-1, in_time, self.n_basis**2)
             z += zr
 
         out = z / (self.n_rank*self.n_basis)
@@ -289,8 +289,6 @@ class SingleStageModelBilinear(nn.Module):
         #out = self.conv_out(out)
 
         return out2* mask[:, 0:1, :]
-
-
 
 
 class MultiStageModel(nn.Module):

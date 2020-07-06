@@ -90,14 +90,7 @@ def f_score(recognized, ground_truth, overlap, bg_class=["background"]):
     return float(tp), float(fp), float(fn)
 
 
-def main():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument('--dataset', default="gtea")
-    parser.add_argument('--split', default='1')
-
-    args = parser.parse_args()
-
+def main(args):
     ground_truth_path = "./data/"+args.dataset+"/groundTruth/"
     recog_path = "./results/"+args.dataset+"/split_"+args.split+"/"
     file_list = "./data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
@@ -133,6 +126,10 @@ def main():
 
     print "Acc: %.4f" % (100*float(correct)/total)
     print 'Edit: %.4f' % ((1.0*edit)/len(list_of_videos))
+    acc = (100*float(correct)/total)
+    edit = (1.0*edit)/len(list_of_videos)
+    f1_list = []
+
     for s in range(len(overlap)):
         precision = tp[s] / float(tp[s]+fp[s])
         recall = tp[s] / float(tp[s]+fn[s])
@@ -142,7 +139,29 @@ def main():
         f1 = np.nan_to_num(f1)*100
 
         print 'F1@%0.2f: %.4f' % (overlap[s], f1)
+        f1_list.append(f1)
+
+    return [acc, edit]+f1_list
+
 
 
 if __name__ == '__main__':
-    main()
+    
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--dataset', default="gtea")
+    parser.add_argument('--split', default='1')
+    args = parser.parse_args()
+    n_splits=4
+    if args.dataset == '50salads':
+        n_splits=5
+
+    res = 0
+    for ii in range(n_splits):
+        args.split = str(ii+1)
+        res += np.array(main(args))/n_splits
+
+    print('--final results='+str(res))
+
+
+

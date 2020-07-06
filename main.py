@@ -9,7 +9,7 @@ import random
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-seed = 153555
+seed = 1538574472
 random.seed(seed)
 torch.manual_seed(seed)
 torch.cuda.manual_seed_all(seed)

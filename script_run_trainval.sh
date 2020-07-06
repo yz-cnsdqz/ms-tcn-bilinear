@@ -7,8 +7,6 @@
 
 dataset=$1
 pooling=$2
-dropout=$3
-epoch=$4
 
 splits=$(seq 1 4)
 

@@ -48,8 +48,8 @@ class RPBinaryPooling(nn.Module):
         z = 0
         for r in range(self.n_rank):
 
-            xer = torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1)
-            xfr = torch.matmul(x.permute([0,2,1]), Fr).unsqueeze(-2)
+            xer = torch.matmul(x.permute([0,2,1]), self.E_list[r]).unsqueeze(-1)
+            xfr = torch.matmul(x.permute([0,2,1]), self.F_list[r]).unsqueeze(-2)
             zr = torch.matmul(xer, xfr).view(-1, in_time, self.n_basis**2)
             z += zr
 

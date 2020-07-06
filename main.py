@@ -18,6 +18,7 @@ torch.backends.cudnn.deterministic = True
 parser = argparse.ArgumentParser()
 parser.add_argument('--action', default='train')
 parser.add_argument('--dataset', default="gtea")
+parser.add_argument('--pooling', default='FirstOrder')
 parser.add_argument('--split', default='1')
 
 args = parser.parse_args()
@@ -40,16 +41,14 @@ if args.dataset == "50salads":
 
 proj_folder = os.path.abspath(os.getcwd())
 
-
 vid_list_file = proj_folder+"/data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
 vid_list_file_tst = proj_folder+"/data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
 features_path = proj_folder+"/data/"+args.dataset+"/features/"
 gt_path = proj_folder+"/data/"+args.dataset+"/groundTruth/"
-
 mapping_file = proj_folder+"/data/"+args.dataset+"/mapping.txt"
+model_dir = "./models/"+args.dataset+'_'+args.pooling+"/split_"+args.split
+results_dir = "./results/"+args.dataset+'_'+args.pooling+"/split_"+args.split
 
-model_dir = "./models/"+args.dataset+"/split_"+args.split
-results_dir = "./results/"+args.dataset+"/split_"+args.split
 
 if not os.path.exists(model_dir):
     os.makedirs(model_dir)
@@ -64,8 +63,8 @@ for a in actions:
     actions_dict[a.split()[1]] = int(a.split()[0])
 
 num_classes = len(actions_dict)
+trainer = Trainer(num_stages, num_layers, num_f_maps, features_dim, num_classes, pooling=args.pooling)
 
-trainer = Trainer(num_stages, num_layers, num_f_maps, features_dim, num_classes)
 if args.action == "train":
     batch_gen = BatchGenerator(num_classes, actions_dict, gt_path, features_path, sample_rate)
     batch_gen.read_data(vid_list_file)

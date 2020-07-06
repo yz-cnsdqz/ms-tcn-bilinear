@@ -92,7 +92,7 @@ def f_score(recognized, ground_truth, overlap, bg_class=["background"]):
 
 def main(args):
     ground_truth_path = "./data/"+args.dataset+"/groundTruth/"
-    recog_path = "./results/"+args.dataset+"/split_"+args.split+"/"
+    recog_path = "./results/"+args.dataset+"_"+args.pooling+"/split_"+args.split+"/"
     file_list = "./data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
 
     list_of_videos = read_file(file_list).split('\n')[:-1]
@@ -150,6 +150,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--dataset', default="gtea")
+    parser.add_argument('--pooling', default='FirstOrder')
     parser.add_argument('--split', default='1')
     args = parser.parse_args()
     n_splits=4

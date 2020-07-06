@@ -6,7 +6,7 @@ import torch.nn.functional as F
 from torch import optim
 import copy
 import numpy as np
-
+from torch.nn.parameter import Parameter
 
 
 class RPBinaryPooling(nn.Module):
@@ -50,7 +50,7 @@ class RPBinaryPooling(nn.Module):
 
             xer = torch.matmul(x.permute([0,2,1]), self.E_list[r]).permute([0,2,1])
             xfr = torch.matmul(x.permute([0,2,1]), self.F_list[r]).permute([0,2,1])
-            zr = torch.einsum('bit, bjt->bijt', xer, xfr).view(-1, self.n_basis**2, in_time)
+            zr = torch.einsum('bit, bjt->bijt', (xer, xfr)).view(-1, self.n_basis**2, in_time)
             z += zr
 
         out = z / (self.n_rank*self.n_basis)
@@ -128,8 +128,8 @@ class RPGaussianPooling(nn.Module):
 
         z = 0
         for r in range(self.n_rank):
-            Er = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r]
-            Fr = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r]
+            Er = self.in_dim**0.5/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r]
+            Fr = self.in_dim**0.5/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r]
 
             xer = torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1)
             xfr = torch.matmul(x.permute([0,2,1]), Fr).unsqueeze(-2)
@@ -212,8 +212,8 @@ class RPGaussianPoolingFull(nn.Module):
         in_time = x.shape[2]
         z = 0
         for r in range(self.n_rank):
-            Er = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r]
-            Fr = np.sqrt(self.in_dim)/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r]
+            Er = self.in_dim**0.5/(1e-5+torch.abs(self.sigma_list[r])) * self.E_list[r]
+            Fr = self.in_dim**0.5/(1e-5+torch.abs(self.rho_list[r])) * self.F_list[r]
 
             xer_cos = torch.cos(torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1))
             xer_sin = torch.sin(torch.matmul(x.permute([0,2,1]), Er).unsqueeze(-1))

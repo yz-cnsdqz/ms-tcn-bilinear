@@ -1,16 +1,16 @@
 executable = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/script_run_trainval.sh
 
 dataset = gtea
-pooling = RPGaussianFull
-dropout = 0.25
+pooling = FirstOrder
+dropout = 0.0
 epoch = 50
+seedid = 0
 
+arguments = "$(dataset) $(pooling) $(dropout) $(epoch) $(Process) $(seedid)"
 
-arguments = "$(dataset) $(pooling) $(dropout) $(epoch) $(Process)"
-
-error = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/$(dataset)_$(pooling)_$(dropout)_$(epoch)_$(Process).err
-output = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/$(dataset)_$(pooling)_$(dropout)_$(epoch)_$(Process).out
-log = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/$(dataset)_$(pooling)_$(dropout)_$(epoch)_$(Process).log
+error = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/$(dataset)_$(pooling)_$(dropout)_$(epoch)_$(Process)_$(seedid).err
+output = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/$(dataset)_$(pooling)_$(dropout)_$(epoch)_$(Process)_$(seedid).out
+log = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/$(dataset)_$(pooling)_$(dropout)_$(epoch)_$(Process)_$(seedid).log
 
 
 request_memory = 32000

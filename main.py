@@ -9,19 +9,31 @@ import random
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-seed = 1538574472
-random.seed(seed)
-torch.manual_seed(seed)
-torch.cuda.manual_seed_all(seed)
-torch.backends.cudnn.deterministic = True
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--action', default='train')
 parser.add_argument('--dataset', default="gtea")
 parser.add_argument('--pooling', default='FirstOrder')
 parser.add_argument('--split', default='1')
+parser.add_argument('--seedid', default='0')
+
 
 args = parser.parse_args()
+
+
+seed_list = [1538574472, 148522147, 63358421, 120, 46652]
+seed = seed_list[int(args.seedid)]
+random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+torch.backends.cudnn.deterministic = True
+
+
+
+
+
+
 
 num_stages = 4
 num_layers = 10
@@ -46,8 +58,8 @@ vid_list_file_tst = proj_folder+"/data/"+args.dataset+"/splits/test.split"+args.
 features_path = proj_folder+"/data/"+args.dataset+"/features/"
 gt_path = proj_folder+"/data/"+args.dataset+"/groundTruth/"
 mapping_file = proj_folder+"/data/"+args.dataset+"/mapping.txt"
-model_dir = "./models/"+args.dataset+'_'+args.pooling+"/split_"+args.split
-results_dir = "./results/"+args.dataset+'_'+args.pooling+"/split_"+args.split
+model_dir = "./models/"+args.dataset+'_'+args.pooling+'_'+args.seedid+"/split_"+args.split
+results_dir = "./results/"+args.dataset+'_'+args.pooling+'_'+args.seedid+"/split_"+args.split
 
 
 if not os.path.exists(model_dir):

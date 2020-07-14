@@ -21,7 +21,7 @@ class RPBinaryPooling(nn.Module):
         self.E_list = nn.ParameterList([])
         self.F_list = nn.ParameterList([])
         self.use_normalization = use_normalization
-        np.random.seed(seed=1538574472)
+        #np.random.seed(seed=0)
         for r in range(self.n_rank):
             Er_np = np.sign(np.random.standard_normal([self.in_dim, self.n_basis]))
             self.E_list.append(Parameter(torch.tensor(Er_np,dtype=torch.float32,
@@ -82,7 +82,7 @@ class RPGaussianPooling(nn.Module):
         self.sigma_list = nn.ParameterList([])
         self.rho_list = nn.ParameterList([])
         self.use_normalization = use_normalization
-        np.random.seed(seed=1538574472)
+       # np.random.seed(seed=0)
 
         if self.init_sigma is None:
             self.init_sigma = np.sqrt(self.in_dim)
@@ -166,7 +166,7 @@ class RPGaussianPoolingFull(nn.Module):
         self.sigma_list = nn.ParameterList([])
         self.rho_list = nn.ParameterList([])
         self.use_normalization = use_normalization
-        np.random.seed(seed=1538574472)
+        #np.random.seed(seed=0)
 
         if self.init_sigma is None:
             self.init_sigma = np.sqrt(self.in_dim)
@@ -397,7 +397,7 @@ class Trainer:
             list_of_vids = file_ptr.read().split('\n')[:-1]
             file_ptr.close()
             for vid in list_of_vids:
-                print vid
+                #print(vid)
                 features = np.load(features_path + vid.split('.')[0] + '.npy')
                 features = features[:, ::sample_rate]
                 input_x = torch.tensor(features, dtype=torch.float)

@@ -1,0 +1,35 @@
+executable = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/script_run_trainval.sh
+
+dataset = breakfast
+pooling = RPGaussianFull
+dropout = 0.25
+epoch = 50
+seedid = 1
+
+arguments = "$(dataset) $(pooling) $(dropout) $(epoch) $(Process) $(seedid)"
+
+error = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/logs/$(dataset)_$(pooling)_$(dropout)_$(epoch)_$(Process)_$(seedid).err
+output = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/logs/$(dataset)_$(pooling)_$(dropout)_$(epoch)_$(Process)_$(seedid).out
+log = /is/ps2/yzhang/workspaces/ms-tcn-bilinear/mpi_clusters/logs/$(dataset)_$(pooling)_$(dropout)_$(epoch)_$(Process)_$(seedid).log
+
+
+request_memory = 32000
+request_gpus = 1
+request_cpus=1
+requirements = CUDACapability>=7.0
+requirements = TARGET.CUDAGlobalMemoryMb > 15000
+getenv = True
+
+# Maximum expected execution time for the job, in seconds
+MaxTime = 75000
+# Number of retries before giving up
+NumRetries = 500
+
+periodic_hold = (JobStatus =?= 2) && ((CurrentTime - JobCurrentStartDate) >= $(MaxTime))
+periodic_hold_reason = ifThenElse(JobRunCount <= $(NumRetries), "Job runtime exceeded", "Job runtime exceeded, no more retries left")
+periodic_hold_subcode = ifThenElse(JobRunCount <= $(NumRetries), 1, 2)
+
+periodic_release = ( (JobStatus =?= 5) && (HoldReasonCode =?= 3) && (HoldReasonSubCode =?= 1) )
+
+
+queue 4

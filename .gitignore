@@ -5,3 +5,4 @@ models_backup/
 data/*/*
 .vscode/
 *.pyc
+mpi_clusters/logs/*

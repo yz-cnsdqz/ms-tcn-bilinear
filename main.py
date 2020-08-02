@@ -1,5 +1,3 @@
-#!/usr/bin/python2.7
-
 import torch
 from model import Trainer
 from batch_gen import BatchGenerator
@@ -9,11 +7,6 @@ import random
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-seed = 153
-random.seed(seed)
-torch.manual_seed(seed)
-torch.cuda.manual_seed_all(seed)
-torch.backends.cudnn.deterministic = True
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--action', default='train')
@@ -22,16 +15,25 @@ parser.add_argument('--split', default='1')
 parser.add_argument('--pooling', default='RPGaussian')
 parser.add_argument('--dropout', default='0.7')
 parser.add_argument('--epoch', default='50')
-
-
+parser.add_argument('--seedid', default='0')
 args = parser.parse_args()
+
+
+seed_list = [153588456,4149685, 9845175,55321,1234]
+seed = seed_list[int(args.seedid)]
+random.seed(seed)
+torch.manual_seed(seed)
+torch.cuda.manual_seed_all(seed)
+torch.backends.cudnn.deterministic = True
+
+
+
 
 num_stages = 4
 num_layers = 10
 num_f_maps = 64
 features_dim = 2048
 bz = 1
-# lr=0.0005 # original
 lr = 0.0005
 
 pooling_type=args.pooling
@@ -51,20 +53,20 @@ sample_rate = 1
 if args.dataset == "50salads":
     sample_rate = 2
 
-data_folder = '/mnt/hdd/ms-tcn-bilinear-data'
+#data_folder = '/mnt/hdd/ms-tcn-bilinear-data'
+data_folder = '/is/ps2/yzhang/workspaces/ms-tcn-bilinear'
 
 vid_list_file = data_folder+"/data/"+args.dataset+"/splits/train.split"+args.split+".bundle"
 vid_list_file_tst = data_folder+"/data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
 features_path = data_folder+"/data/"+args.dataset+"/features/"
 gt_path = data_folder+"/data/"+args.dataset+"/groundTruth/"
-
 mapping_file = data_folder+"/data/"+args.dataset+"/mapping.txt"
 
 # model_dir = "./models/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_type,dropout,num_epochs)+args.split
 # model_dir="./models/model_backup/"+args.dataset+"_gaussian_dropout{}_ep{}_right/split_".format(dropout,num_epochs)+args.split
 # model_dir = "/home/yzhang/workspaces/ms-tcn-bilinear/models/model_backup/"+args.dataset+"_{}_dropout{}_ep{}_right/split_".format(pooling_type,dropout,num_epochs)+args.split
-model_dir = "./models/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_type,dropout,num_epochs)+args.split
-results_dir = "./results/"+args.dataset+"_{}_dropout{}_ep{}/split_".format(pooling_type,dropout,num_epochs)+args.split
+model_dir = "./models/"+args.dataset+"_{}_dropout{}_ep{}_seed{}/split_".format(pooling_type,dropout,num_epochs, args.seedid)+args.split
+results_dir = "./results/"+args.dataset+"_{}_dropout{}_ep{}_seed{}/split_".format(pooling_type,dropout,num_epochs,args.seedid)+args.split
 
 
 

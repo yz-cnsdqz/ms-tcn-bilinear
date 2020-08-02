@@ -1,5 +1,3 @@
-#!/usr/bin/python2.7
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -7,7 +5,7 @@ from torch import optim
 import copy
 import numpy as np
 from torch.nn.parameter import Parameter
-
+import pdb
 
 
 class FBM(nn.Module):
@@ -77,7 +75,6 @@ class RPBinaryPooling(nn.Module):
         self.E_list = nn.ParameterList([])
         self.F_list = nn.ParameterList([])
         self.use_normalization = use_normalization
-        np.random.seed(seed=1538574472)
         for r in range(self.n_rank):
             Er_np = np.sign(np.random.standard_normal([self.in_dim, self.n_basis]))
             self.E_list.append(Parameter(torch.tensor(Er_np,dtype=torch.float32,
@@ -141,7 +138,6 @@ class RPGaussianPooling(nn.Module):
         self.sigma_list = nn.ParameterList([])
         self.rho_list = nn.ParameterList([])
         self.use_normalization = use_normalization
-        np.random.seed(seed=1538574472)
 
         if self.init_sigma is None:
             self.init_sigma = np.sqrt(self.in_dim)
@@ -226,7 +222,6 @@ class RPGaussianPoolingFull(nn.Module):
         self.sigma_list = nn.ParameterList([])
         self.rho_list = nn.ParameterList([])
         self.use_normalization = use_normalization
-        np.random.seed(seed=1538574472)
 
         if self.init_sigma is None:
             self.init_sigma = np.sqrt(self.in_dim)
@@ -507,6 +502,18 @@ class DilatedResidualLayer(nn.Module):
 
 
 
+#def weights_init_uniform(m):
+#    classname = m.__class__.__name__
+#    # for every Linear layer in a model..
+#    #pdb.set_trace()
+#    if classname.find('RPGaussianFull') == -1:
+#        # apply a uniform distribution to the weights and a bias=0
+#        if hasattr(m, 'weight') and hasattr(m, 'bias'): 
+#            m.weight.data.uniform_(-0.3062, 0.3062)
+#            m.bias.data.fill_(0)
+
+
+
 class Trainer:
     def __init__(self, num_blocks, num_layers, num_f_maps, dim, num_classes,
         pooling_type, dropout):
@@ -515,6 +522,7 @@ class Trainer:
         self.ce = nn.CrossEntropyLoss(ignore_index=-100)
         self.mse = nn.MSELoss(reduction='none')
         self.num_classes = num_classes
+        self.pooling_type = pooling_type
         # print('[INFO] -----------device: '+ str(torch.cuda.get_device_name()))
 
 
@@ -522,6 +530,10 @@ class Trainer:
         self.model.train()
         self.model.to(device)
         optimizer = optim.Adam(self.model.parameters(), lr=learning_rate)
+
+        #if self.pooling_type == 'RPGaussianFull':
+        #    self.model.apply(weights_init_uniform)
+        
 
         for epoch in range(num_epochs):
 
@@ -578,7 +590,8 @@ class Trainer:
                 predicted = predicted.squeeze()
                 recognition = []
                 for i in range(len(predicted)):
-                    recognition = np.concatenate((recognition, [actions_dict.keys()[actions_dict.values().index(predicted[i].item())]]*sample_rate))
+                    action_dict_key_list = list(actions_dict.keys())
+                    recognition = np.concatenate((recognition, [action_dict_key_list[list(actions_dict.values()).index(predicted[i].item())]]*sample_rate))
                 f_name = vid.split('/')[-1].split('.')[0]
                 f_ptr = open(results_dir + "/" + f_name, "w")
                 f_ptr.write("### Frame level recognition: ###\n")

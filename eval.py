@@ -1,10 +1,9 @@
-#!/usr/bin/python2.7
 
 # adapted from: https://github.com/colincsl/TemporalConvolutionalNetworks/blob/master/code/metrics.py
 
 import numpy as np
 import argparse
-
+import os
 
 def read_file(path):
     with open(path, 'r') as f:
@@ -94,11 +93,11 @@ def f_score(recognized, ground_truth, overlap, bg_class=["background"]):
 
 def main(args):
 
-    data_path = '/mnt/hdd/ms-tcn-bilinear-data'
-
+    #data_path = '/mnt/hdd/ms-tcn-bilinear-data'
+    data_path = os.getcwd()
     ground_truth_path = data_path+"/data/"+args.dataset+"/groundTruth/"
     file_list = data_path+"/data/"+args.dataset+"/splits/test.split"+args.split+".bundle"
-    recog_path = "./results/"+args.dataset+"_{}_dropout{}_ep{}/split_{}/".format(args.pooling,args.dropout,args.epoch,args.split)
+    recog_path = "./results/"+args.dataset+"_{}_dropout{}_ep{}_seed{}/split_{}/".format(args.pooling,args.dropout,args.epoch,args.seedid,args.split)
 
     list_of_videos = read_file(file_list).split('\n')[:-1]
 
@@ -129,8 +128,8 @@ def main(args):
             fp[s] += fp1
             fn[s] += fn1
 
-    print ("Acc: %.4f" % (100*float(correct)/total) )
-    print ('Edit: %.4f' % ((1.0*edit)/len(list_of_videos)) )
+#    print ("Acc: %.4f" % (100*float(correct)/total) )
+#    print ('Edit: %.4f' % ((1.0*edit)/len(list_of_videos)) )
     acc = 100*float(correct)/total
     edit= (1.0*edit)/len(list_of_videos)
     f1_list = []
@@ -139,7 +138,7 @@ def main(args):
         recall = tp[s] / float(tp[s]+fn[s])
         f1 = 2.0 * (precision*recall) / (precision+recall)
         f1 = np.nan_to_num(f1)*100
-        print ('F1@%0.2f: %.4f' % (overlap[s], f1))
+#        print ('F1@%0.2f: %.4f' % (overlap[s], f1))
         f1_list.append(f1)
 
     return [acc, edit] + f1_list
@@ -155,6 +154,7 @@ if __name__ == '__main__':
     parser.add_argument('--pooling',default='FirstOrder')
     parser.add_argument('--dropout',default=0.5)
     parser.add_argument('--epoch',default=50)
+    parser.add_argument('--seedid',default=0)
 
     args = parser.parse_args()
 
@@ -179,12 +179,12 @@ if __name__ == '__main__':
         f1_50_all += f1_50 / n_splits
 
     print('------- overall ----------')
-    print('Acc:{:f}'.format(acc_all))
-    print('Edit:{:f}'.format(edit_all))
-    print('F1@10:{:f}'.format(f1_10_all))
-    print('F1@25:{:f}'.format(f1_25_all))
-    print('F1@50:{:f}'.format(f1_50_all))
-
+#    print('Acc:{:f}'.format(acc_all))
+#    print('Edit:{:f}'.format(edit_all))
+#    print('F1@10:{:f}'.format(f1_10_all))
+#    print('F1@25:{:f}'.format(f1_25_all))
+#    print('F1@50:{:f}'.format(f1_50_all))
+    print([acc_all, edit_all, f1_10_all, f1_25_all, f1_50_all])
 
 
 
